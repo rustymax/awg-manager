@@ -24,7 +24,7 @@ Options:
 
 Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
-### Install AmneziaWG
+## Install AmneziaWG
 
 ```bash
 apt update && apt upgrade -y
@@ -53,7 +53,21 @@ make
 make install
 ```
 
-### Setup
+## Usage
+
+Simply run:
+```
+amneziawg-go awg0
+```
+This will create an interface and fork into the background. To remove the interface, use the usual ip link del wg0, or if your system does not support removing interfaces directly, you may instead remove the control socket via rm -f /var/run/amneziawg/wg0.sock, which will result in amneziawg-go shutting down.
+
+To run amneziawg-go without forking to the background, pass -f or --foreground:
+```
+amneziawg-go -f wg0
+```
+When an interface is running, you may use amnezia-wg-tools `awg-quick`  to configure it, as well as the usual ip(8) and ifconfig(8) commands.
+
+## Setup
 
  - Download this script [wg-manager.sh](https://danuk.github.io/wg-manager/wg-manager.sh) from GitHub
  - Initialize WireGuard server: `./wg-manager.sh -i -s YOUR_SERVER_IP`
