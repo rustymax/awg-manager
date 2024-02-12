@@ -18,7 +18,6 @@ function usage {
   echo " -L : Lock user"
   echo " -U : Unlock user"
   echo " -p : Print user config"
-  echo " -q : Print user QR code"
   echo " -u <user> : User identifier (uniq field for vpn account)"
   echo " -s <server> : Server host for user connection"
   echo " -I : Interface (default auto)"
@@ -29,8 +28,8 @@ function usage {
 unset USER
 umask 0077
 
-HOME_DIR="/etc/wireguard"
-SERVER_NAME="wg-server"
+HOME_DIR="/etc/amnezia/amneziawg"
+SERVER_NAME="awg0"
 SERVER_IP_PREFIX="10.10.10"
 SERVER_PORT=39547
 SERVER_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
@@ -43,7 +42,6 @@ while getopts ":icdpqhLUu:I:s:" opt; do
      L) LOCK=1 ;;
      U) UNLOCK=1 ;;
      p) PRINT_USER_CONFIG=1 ;;
-     q) PRINT_QR_CODE=1 ;;
      u) USER="$OPTARG" ;;
      I) SERVER_INTERFACE="$OPTARG" ;;
      h) usage ;;
@@ -56,7 +54,7 @@ done
 [ $# -lt 1 ] && usage
 
 function reload_server {
-    wg syncconf ${SERVER_NAME} <(wg-quick strip ${SERVER_NAME})
+    awg syncconf ${SERVER_NAME} <(awg-quick strip ${SERVER_NAME})
 }
 
 function get_new_ip {
@@ -132,7 +130,7 @@ function init {
     echo -n "$SERVER_ENDPOINT" > "keys/.server"
 
     if [ ! -f "keys/${SERVER_NAME}/private.key" ]; then
-        wg genkey | tee "keys/${SERVER_NAME}/private.key" | wg pubkey > "keys/${SERVER_NAME}/public.key"
+        awg genkey | tee "keys/${SERVER_NAME}/private.key" | awg pubkey > "keys/${SERVER_NAME}/public.key"
     fi
 
     if [ -f "$SERVER_NAME.conf" ]; then
@@ -150,14 +148,23 @@ PrivateKey = ${SERVER_PVT_KEY}
 PostUp = iptables -P FORWARD ACCEPT
 PostUp = iptables -t nat -A POSTROUTING -o ${SERVER_INTERFACE} -j MASQUERADE
 PostDown = iptables -t nat -D POSTROUTING -o ${SERVER_INTERFACE} -j MASQUERADE
+Jc = 9
+Jmin = 50
+Jmax = 1000
+S1 = 122
+S2 = 73
+H1 = 1885740354
+H2 = 1719205186
+H3 = 2118327503
+H4 = 297399059
 
 EOF
 
     echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf
     sysctl -p
 
-    systemctl enable wg-quick@${SERVER_NAME}
-    wg-quick up ${SERVER_NAME} || true
+    systemctl enable awg-quick@${SERVER_NAME}
+    awg-quick up ${SERVER_NAME} || true
 
     echo "Server initialized successfully"
     exit 0
@@ -173,7 +180,7 @@ function create {
     USER_IP=$( get_new_ip )
 
     mkdir "keys/${USER}"
-    wg genkey | tee "keys/${USER}/private.key" | wg pubkey > "keys/${USER}/public.key"
+    awg genkey | tee "keys/${USER}/private.key" | awg pubkey > "keys/${USER}/public.key"
 
     USER_PVT_KEY=$(cat "keys/${USER}/private.key")
     USER_PUB_KEY=$(cat "keys/${USER}/public.key")
@@ -184,6 +191,15 @@ cat <<EOF > "keys/${USER}/${USER}.conf"
 Address = ${USER_IP}
 PrivateKey = ${USER_PVT_KEY}
 DNS = 8.8.8.8
+Jc = 9
+Jmin = 50
+Jmax = 1000
+S1 = 122
+S2 = 73
+H1 = 1885740354
+H2 = 1719205186
+H3 = 2118327503
+H4 = 297399059
 
 [Peer]
 PublicKey = ${SERVER_PUB_KEY}
@@ -238,8 +254,6 @@ fi
 
 if [ $PRINT_USER_CONFIG ]; then
     cat "keys/${USER}/${USER}.conf"
-elif [ $PRINT_QR_CODE ]; then
-    qrencode -t ansiutf8 < "keys/${USER}/${USER}.conf"
 fi
 
 exit 0
