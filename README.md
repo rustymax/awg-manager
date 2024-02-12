@@ -1,12 +1,12 @@
-# wg-manager
+# awg-manager
 
-WireGuard manager allow initialize WireGuard server and manage users.
+AmneziaWG manager allow initialize AmneziaWG server and manage users.
 
-You can start the WireGuard server with one command, and then create (and delete) users.
+You can start the AmneziaWG server with one command, and then create (and delete) users.
 
 
 ```bash
-Usage: ./wg-manager.sh [<options>] [command [arg]]
+Usage: ./awg-manager.sh [<options>] [command [arg]]
 Options:
  -i : Init (Create server keys and configs)
  -c : Create new user
@@ -14,7 +14,6 @@ Options:
  -L : Lock user
  -U : Unlock user
  -p : Print user config
- -q : Print user QR code
  -u <user> : User identifier (uniq field for vpn account)
  -s <server> : Server host for user connection
  -I : Interface (default auto)
@@ -23,12 +22,35 @@ Options:
 
 ## Quick start
 
-Run server (bare-metal or VPS) with Ubuntu 22.02
+Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
-### Install WireGuard
+### Install AmneziaWG
 
 ```bash
-apt install wireguard wireguard-tools qrencode -y
+apt update && apt upgrade -y
+apt install build-essential curl git wget -y
+
+#install Golang
+mkdir -p /opt/go
+cd /opt/go
+wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+source $HOME/.profile
+# if the go version does not show, then update the session
+
+#Install amnezia-go
+git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
+cd /opt/amnezia-go
+make
+#copy to amneziawg-go
+cp /opt/amnezia-go/amneziawg-go /usr/bin
+
+#Install amnezia-tools
+git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
+cd /opt/amnezia-tools/src
+make
+make install
 ```
 
 ### Setup
