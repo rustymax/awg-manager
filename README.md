@@ -69,10 +69,10 @@ When an interface is running, you may use amnezia-wg-tools `awg-quick`  to confi
 
 ## Setup
 
- - Download this script [wg-manager.sh](https://danuk.github.io/wg-manager/wg-manager.sh) from GitHub
- - Initialize WireGuard server: `./wg-manager.sh -i -s YOUR_SERVER_IP`
- - Add your user: `./wg-manager.sh -c -u my_user -p > wg-client.conf`
+ - Download this script [awg-manager.sh](https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh) from GitHub
+ - Initialize WireGuard server: `./awg-manager.sh -i -s YOUR_SERVER_IP`
+ - Add your user: `./awg-manager.sh -c -u my_user -p > awg-client.conf`
  - Install WireGuard on the client
- - Start client with config `wg-client.conf`
+ - Start client with config `awg-client.conf`
 
 
