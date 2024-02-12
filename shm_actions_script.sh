@@ -3,16 +3,10 @@
 set -e
 
 EVENT="{{ event_name }}"
-WG_MANAGER="/etc/wireguard/wg-manager.sh"
+AWG_MANAGER="/etc/amnezia/amneziawg/awg-manager.sh"
 SESSION_ID="{{ user.gen_session.id }}"
 API_URL="{{ config.api.url }}"
-
-# We need the --fail-with-body option for curl.
-# It has been added since curl 7.76.0, but almost all Linux distributions do not support it yet.
-# If your distribution has an older version of curl, you can use it (just comment CURL_REPO)
-CURL_REPO="https://github.com/moparisthebest/static-curl/releases/download/v7.86.0/curl-amd64"
-CURL="/opt/curl/curl-amd64"
-#CURL="curl"
+CURL="curl"
 
 echo "EVENT=$EVENT"
 
@@ -20,9 +14,11 @@ case $EVENT in
     INIT)
         SERVER_HOST="{{ server.settings.host_name }}"
         SERVER_INTERFACE="{{ server.settings.host_interface }}"
+        if [[ -z "$SERVER_INTERFACE" ]]; then
+            SERVER_INTERFACE=$(ip route | awk '/default/ {print $5; exit}')
+        fi
         if [ -z $SERVER_HOST ]; then
-            echo "ERROR: set variable 'host_name' to server settings"
-            exit 1
+            SERVER_HOST="{{ server.settings.host }}"
         fi
         
         echo "Install required packages"
@@ -30,11 +26,11 @@ case $EVENT in
         apt install -y \
             iproute2 \
             iptables \
-            wireguard \
-            wireguard-tools \
-            qrencode \
             curl \
-            wget
+            wget \
+            git \
+            build-essential \
+            make
             
         echo "Check domain: $API_URL"
         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" $API_URL/shm/v1/test)
@@ -43,33 +39,46 @@ case $EVENT in
             echo "Got status: $HTTP_CODE"
             exit 1
         fi
-
-        if [[ $CURL_REPO && ! -f $CURL ]]; then
-            echo "Install modern curl"
-            mkdir -p /opt/curl
-            cd /opt/curl
-            wget $CURL_REPO
-            chmod 755 $CURL
+        mkdir -p /opt/go
+        cd /opt/go
+        wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+        rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+        echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+        source $HOME/.profile
+        if ! command -v go &> /dev/null; then
+            cp /usr/local/go/bin/go /usr/bin && cp /usr/local/go/bin/gofmt /usr/bin
         fi
 
-        echo "Download wg-manager.sh"
+        git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
+        cd /opt/amnezia-go
+        make
+        sleep 1
+        cp /opt/amnezia-go/amneziawg-go /usr/bin
+
+        git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
+        cd /opt/amnezia-tools/src
+        make
+        make install
+        sleep 1
+
+        echo "Download awg-manager.sh"
         cd /etc/wireguard
-        $CURL -s --fail-with-body https://danuk.github.io/wg-manager/wg-manager.sh > $WG_MANAGER
+        $CURL -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > $AWG_MANAGER
 
         echo "Init server"
-        chmod 700 $WG_MANAGER
+        chmod 700 $AWG_MANAGER
         if [ $SERVER_INTERFACE ]; then
-            $WG_MANAGER -i -s $SERVER_HOST -I $SERVER_INTERFACE
+            $AWG_MANAGER -i -s $SERVER_HOST -I $SERVER_INTERFACE
         else
-            $WG_MANAGER -i -s $SERVER_HOST
+            $AWG_MANAGER -i -s $SERVER_HOST
         fi
         ;;
     CREATE)
         echo "Create new user"
-        USER_CFG=$($WG_MANAGER -u "{{ us.id }}" -c -p)
+        USER_CFG=$($AWG_MANAGER -u "{{ us.id }}" -c -p)
 
         echo "Upload user key to SHM"
-        $CURL -s --fail-with-body -XPUT \
+        $CURL -s -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
             $API_URL/shm/v1/storage/manage/vpn{{ us.id }} \
@@ -78,20 +87,20 @@ case $EVENT in
         ;;
     ACTIVATE)
         echo "Activate user"
-        $WG_MANAGER -u "{{ us.id }}" -U
+        $AWG_MANAGER -u "{{ us.id }}" -U
         echo "done"
         ;;
     BLOCK)
         echo "Block user"
-        $WG_MANAGER -u "{{ us.id }}" -L
+        $AWG_MANAGER -u "{{ us.id }}" -L
         echo "done"
         ;;
     REMOVE)
         echo "Remove user"
-        $WG_MANAGER -u "{{ us.id }}" -d
+        $AWG_MANAGER -u "{{ us.id }}" -d
 
         echo "Remove user key from SHM"
-        $CURL -s --fail-with-body -XDELETE \
+        $CURL -s -XDELETE \
             -H "session-id: $SESSION_ID" \
             $API_URL/shm/v1/storage/manage/vpn{{ us.id }}
         echo "done"
@@ -101,5 +110,3 @@ case $EVENT in
         exit 0
         ;;
 esac
-
-
