@@ -58,6 +58,8 @@ case $EVENT in
         
         echo "Install Amnezia-Go"
         if test -d /opt/amnezia-go; then
+            cd /opt/amnezia-go
+            make >> /dev/null
             echo "installed"
         else
             echo "install"
@@ -68,6 +70,9 @@ case $EVENT in
         fi
         echo "Install Amnezia-tools"
         if test -d /opt/amnezia-tools; then
+            cd /opt/amnezia-tools/src
+            make >> /dev/null
+            make install 
             echo "installed"
         else
             echo "install"
