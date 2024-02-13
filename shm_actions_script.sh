@@ -13,7 +13,7 @@ echo "EVENT=$EVENT"
 case $EVENT in
     INIT)
         SERVER_HOST="{{ server.settings.host_name }}"
-        SERVER_INTERFACE="{{ server.settings.host_interface }}"
+        SERVER_INTERFACE="{{ server.settings.interface }}"
         if [[ -z "$SERVER_INTERFACE" ]]; then
             SERVER_INTERFACE=$(ip route | awk '/default/ {print $5; exit}')
         fi
@@ -22,7 +22,7 @@ case $EVENT in
         fi
         
         echo "Install required packages"
-        apt update
+        apt update >> /dev/nul
         apt install -y \
             iproute2 \
             iptables \
@@ -39,30 +39,46 @@ case $EVENT in
             echo "Got status: $HTTP_CODE"
             exit 1
         fi
-        mkdir -p /opt/go
-        cd /opt/go
-        wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
-        rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
-        echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
-        source $HOME/.profile
+        echo "Install Golang"
         if ! command -v go &> /dev/null; then
-            cp /usr/local/go/bin/go /usr/bin && cp /usr/local/go/bin/gofmt /usr/bin
+            echo "Install"
+            mkdir -p /opt/go
+            cd /opt/go
+            wget -q https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+            rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+            echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+            source /etc/profile
+            source $HOME/.bashrc
+            if [[ "$SHELL" == "zsh" ]]; then
+                source $HOME/.zshrc
+            fi
+        else
+            echo "Golang installed"
         fi
-
-        git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
-        cd /opt/amnezia-go
-        make
-        sleep 1
-        cp /opt/amnezia-go/amneziawg-go /usr/bin
-
-        git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
-        cd /opt/amnezia-tools/src
-        make
-        make install
-        sleep 1
-
+        
+        echo "Install Amnezia-Go"
+        if test -d /opt/amnezia-go; then
+            echo "installed"
+        else
+            echo "install"
+            git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go >> /dev/null
+            cd /opt/amnezia-go
+            make >> /dev/null
+            cp /opt/amnezia-go/amneziawg-go /usr/bin/amneziawg-go
+        fi
+        echo "Install Amnezia-tools"
+        if test -d /opt/amnezia-tools; then
+            echo "installed"
+        else
+            echo "install"
+            git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools  >> /dev/null
+            cd /opt/amnezia-tools/src
+            make >> /dev/null
+            make install 
+        fi
+        echo
         echo "Download awg-manager.sh"
-        cd /etc/wireguard
+        mkdir -p /etc/amnezia/amneziawg
         $CURL -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > $AWG_MANAGER
 
         echo "Init server"
