@@ -188,9 +188,8 @@ function create {
 
 cat <<EOF > "keys/${USER}/${USER}.conf"
 [Interface]
-Address = ${USER_IP}
 PrivateKey = ${USER_PVT_KEY}
-DNS = 8.8.8.8
+Address = ${USER_IP}
 Jc = 9
 Jmin = 50
 Jmax = 1000
@@ -204,8 +203,8 @@ H4 = 297399059
 [Peer]
 PublicKey = ${SERVER_PUB_KEY}
 Endpoint = ${SERVER_ENDPOINT}:${SERVER_PORT}
-PersistentKeepalive = 20
 AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 20
 EOF
 
     add_user_to_server
