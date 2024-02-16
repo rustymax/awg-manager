@@ -97,6 +97,7 @@ cat <<EOF >> "$SERVER_NAME.conf"
 [Peer]
 PublicKey = ${USER_PUB_KEY}
 AllowedIPs = ${USER_IP}
+PresharedKey = ${USER_PSK_KEY}
 # END ${USER}
 EOF
 
@@ -180,10 +181,11 @@ function create {
     USER_IP=$( get_new_ip )
 
     mkdir "keys/${USER}"
-    awg genkey | tee "keys/${USER}/private.key" | awg pubkey > "keys/${USER}/public.key"
+    awg genkey | tee "keys/${USER}/private.key" | awg pubkey > "keys/${USER}/public.key" | awg genpsk > "keys/${USER}/psk.key"
 
     USER_PVT_KEY=$(cat "keys/${USER}/private.key")
     USER_PUB_KEY=$(cat "keys/${USER}/public.key")
+    USER_PSK_KEY=$(cat "keys/${USER}/psk.key")
     SERVER_PUB_KEY=$(cat "keys/$SERVER_NAME/public.key")
 
 cat <<EOF > "keys/${USER}/${USER}.conf"
@@ -206,6 +208,7 @@ PublicKey = ${SERVER_PUB_KEY}
 Endpoint = ${SERVER_ENDPOINT}:${SERVER_PORT}
 AllowedIPs = 0.0.0.0/0
 PersistentKeepalive = 20
+PresharedKey = ${USER_PSK_KEY}
 EOF
 
     add_user_to_server
