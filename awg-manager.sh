@@ -146,18 +146,17 @@ cat <<EOF > "$SERVER_NAME.conf"
 Address = ${SERVER_IP_PREFIX}.1/32
 ListenPort = ${SERVER_PORT}
 PrivateKey = ${SERVER_PVT_KEY}
-PostUp = iptables -P FORWARD ACCEPT
-PostUp = iptables -t nat -A POSTROUTING -o ${SERVER_INTERFACE} -j MASQUERADE
-PostDown = iptables -t nat -D POSTROUTING -o ${SERVER_INTERFACE} -j MASQUERADE
-Jc = 7
+PostUp = iptables -A INPUT -i ${SERVER_NAME} -j ACCEPT; iptables -A FORWARD -i ${SERVER_NAME} -j ACCEPT; iptables -A OUTPUT -o ${SERVER_NAME} -j ACCEPT; iptables -A FORWARD -i ${SERVER_NAME} -o ${SERVER_INTERFACE} -s ${SERVER_IP_PREFIX}.0/24 -j ACCEPT; iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT; iptables -t nat -A POSTROUTING -s ${SERVER_IP_PREFIX}.0/24 -o ${SERVER_INTERFACE} -j MASQUERADE
+PostDown = iptables -D INPUT -i ${SERVER_NAME} -j ACCEPT; iptables -D FORWARD -i ${SERVER_NAME} -j ACCEPT; iptables -D OUTPUT -o ${SERVER_NAME} -j ACCEPT; iptables -D FORWARD -i ${SERVER_NAME} -o ${SERVER_INTERFACE} -s ${SERVER_IP_PREFIX}.0/24 -j ACCEPT; iptables -D FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT; iptables -t nat -D POSTROUTING -s ${SERVER_IP_PREFIX}.0/24 -o ${SERVER_INTERFACE} -j MASQUERADE
+Jc = 8
 Jmin = 50
 Jmax = 1000
-S1 = 116
-S2 = 61
-H1 = 1139437039
-H2 = 1088834137
-H3 = 977318325
-H4 = 1583407056
+S1 = 26
+S2 = 74
+H1 = 32387182
+H2 = 1638522486
+H3 = 1724528624
+H4 = 172455276
 
 EOF
 
@@ -192,16 +191,15 @@ cat <<EOF > "keys/${USER}/${USER}.conf"
 [Interface]
 PrivateKey = ${USER_PVT_KEY}
 Address = ${USER_IP}
-MTU = 1350
-Jc = 7
+Jc = 8
 Jmin = 50
 Jmax = 1000
-S1 = 116
-S2 = 61
-H1 = 1139437039
-H2 = 1088834137
-H3 = 977318325
-H4 = 1583407056
+S1 = 26
+S2 = 74
+H1 = 32387182
+H2 = 1638522486
+H3 = 1724528624
+H4 = 172455276
 
 [Peer]
 PublicKey = ${SERVER_PUB_KEY}
