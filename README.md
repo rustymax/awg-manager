@@ -71,9 +71,9 @@ When an interface is running, you may use amnezia-wg-tools `awg-quick`  to confi
 ## Setup
 
  - Download this script [awg-manager.sh](https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh) from GitHub
- - Initialize WireGuard server: `./awg-manager.sh -i -s YOUR_SERVER_IP`
+ - Initialize Annezia-WG server: `./awg-manager.sh -i -s YOUR_SERVER_IP`
  - Add your user: `./awg-manager.sh -c -u my_user -p > awg-client.conf`
- - Install WireGuard on the client
+ - Install AmneziaVPN on the client
  - Start client with config `awg-client.conf`
 
 
