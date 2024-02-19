@@ -45,7 +45,7 @@ git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
 cd /opt/amnezia-go
 make
 #copy to amneziawg-go
-cp /opt/amnezia-go/amneziawg-go /usr/bin
+cp /opt/amnezia-go/amneziawg-go /usr/bin/amneziawg-go
 
 #Install amnezia-tools
 git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
