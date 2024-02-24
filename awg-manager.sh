@@ -30,7 +30,7 @@ umask 0077
 
 HOME_DIR="/etc/amnezia/amneziawg"
 SERVER_NAME="awg0"
-SERVER_IP_PREFIX="10.10.10"
+SERVER_IP_PREFIX="10.20.30"
 SERVER_PORT=39547
 SERVER_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
 
