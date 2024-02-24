@@ -64,7 +64,7 @@ This will create an interface and fork into the background. To remove the interf
 
 To run amneziawg-go without forking to the background, pass -f or --foreground:
 ```
-amneziawg-go -f wg0
+amneziawg-go -f awg0
 ```
 When an interface is running, you may use amnezia-wg-tools `awg-quick`  to configure it, as well as the usual ip(8) and ifconfig(8) commands.
 
