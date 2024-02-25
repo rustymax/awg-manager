@@ -20,66 +20,12 @@ case $EVENT in
         if [ -z $SERVER_HOST ]; then
             SERVER_HOST="{{ server.settings.host }}"
         fi
-        
-        echo "Install required packages"
-        apt update >> /dev/nul
-        apt install -y \
-            iproute2 \
-            iptables \
-            curl \
-            wget \
-            git \
-            build-essential \
-            make
-            
         echo "Check domain: $API_URL"
         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" $API_URL/shm/v1/test)
         if [ $HTTP_CODE -ne '200' ]; then
             echo "ERROR: incorrect API URL: $API_URL"
             echo "Got status: $HTTP_CODE"
             exit 1
-        fi
-        echo "Install Golang"
-        if ! command -v go &> /dev/null; then
-            echo "Install"
-            mkdir -p /opt/go
-            cd /opt/go
-            wget -q https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
-            rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
-            echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
-            source /etc/profile
-            source $HOME/.bashrc
-            if [[ "$SHELL" == "zsh" ]]; then
-                source $HOME/.zshrc
-            fi
-        else
-            echo "Golang installed"
-        fi
-        
-        echo "Install Amnezia-Go"
-        if test -d /opt/amnezia-go; then
-            cd /opt/amnezia-go
-            make >> /dev/null
-            echo "installed"
-        else
-            echo "install"
-            git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go >> /dev/null
-            cd /opt/amnezia-go
-            make >> /dev/null
-            cp /opt/amnezia-go/amneziawg-go /usr/bin/amneziawg-go
-        fi
-        echo "Install Amnezia-tools"
-        if test -d /opt/amnezia-tools; then
-            cd /opt/amnezia-tools/src
-            make >> /dev/null
-            make install 
-            echo "installed"
-        else
-            echo "install"
-            git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools  >> /dev/null
-            cd /opt/amnezia-tools/src
-            make >> /dev/null
-            make install 
         fi
         echo
         echo "Download awg-manager.sh"
@@ -97,7 +43,7 @@ case $EVENT in
     CREATE)
         echo "Create new user"
         USER_CFG=$($AWG_MANAGER -u "{{ us.id }}" -c -p)
-
+        
         echo "Upload user key to SHM"
         $CURL -s -XPUT \
             -H "session-id: $SESSION_ID" \
