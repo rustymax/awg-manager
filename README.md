@@ -28,7 +28,7 @@ Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
 ```bash
 apt update && apt upgrade -y
-apt install build-essential curl git wget -y
+apt install build-essential curl make git wget -y
 
 #install Golang
 mkdir -p /opt/go
