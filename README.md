@@ -25,7 +25,7 @@ Options:
 
 Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
-## Install AmneziaWG
+## Build AmneziaWG and Install additional packages
 
 ```bash
 apt update && apt upgrade -y
