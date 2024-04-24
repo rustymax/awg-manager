@@ -65,6 +65,7 @@ wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh | 
 ```
 ```
 wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
+wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
 ```
 ```
 cd /etc/amnezia/amneziawg/
