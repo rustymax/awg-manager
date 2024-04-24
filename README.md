@@ -28,7 +28,7 @@ Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
 ```bash
 apt update && apt upgrade -y
-apt install build-essential curl make git wget -y
+apt install build-essential curl make git wget qrencode python3 python3-pip -y
 
 #install Golang
 mkdir -p /opt/go
@@ -51,6 +51,10 @@ git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
 cd /opt/amnezia-tools/src
 make
 make install
+
+#Install PyQt6
+pip3 install PyQt6
+
 ```
 Or
 ```
