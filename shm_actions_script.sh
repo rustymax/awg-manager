@@ -4,9 +4,9 @@ set -e
 
 EVENT="{{ event_name }}"
 AWG_MANAGER="/etc/amnezia/amneziawg/awg-manager.sh"
+CONF_DIR="/etc/amnezia/amneziawg"
 SESSION_ID="{{ user.gen_session.id }}"
 API_URL="{{ config.api.url }}"
-CURL="curl"
 
 echo "EVENT=$EVENT"
 
@@ -28,9 +28,10 @@ case $EVENT in
             exit 1
         fi
         echo
-        echo "Download awg-manager.sh"
-        mkdir -p /etc/amnezia/amneziawg
-        $CURL -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > $AWG_MANAGER
+        echo "Download awg-manager.sh & encode.py"
+        mkdir -p $CONF_DIR
+        curl -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > $AWG_MANAGER
+        curl -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > $CONF_DIR/encode.py
 
         echo "Init server"
         chmod 700 $AWG_MANAGER
@@ -42,14 +43,25 @@ case $EVENT in
         ;;
     CREATE)
         echo "Create new user"
-        USER_CFG=$($AWG_MANAGER -u "{{ us.id }}" -c -p)
-        
+        $AWG_MANAGER -u "{{ us.id }}" -c
         echo "Upload user key to SHM"
-        $CURL -s -XPUT \
+        curl -s -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
-            $API_URL/shm/v1/storage/manage/vpn{{ us.id }} \
-            --data-binary "$USER_CFG"
+            $API_URL/shm/v1/storage/manage/conf_{{ us.id }} \
+            --data-binary "@$CONF_DIR/keys/{{ us.id }}/{{ us.id }}.conf"
+        sleep 1
+        ENCODE=$(python3 $CONF_DIR/encode.py {{ us.id }})
+        curl -sk -XPUT \
+            -H "session-id: $SESSION_ID" \
+            -H "Content-Type: text/plain" \
+            $API_URL/shm/v1/storage/manage/url_{{ us.id }} \
+            --data-binary "vpn://$ENCODE"
+        curl -sk -XPUT \
+            -H "session-id: $SESSION_ID" \
+            -H "Content-Type: text/plain" \
+            $API_URL/shm/v1/storage/manage/encode_{{ us.id }} \
+            --data-binary "$ENCODE"
         echo "done"
         ;;
     ACTIVATE)
@@ -65,11 +77,16 @@ case $EVENT in
     REMOVE)
         echo "Remove user"
         $AWG_MANAGER -u "{{ us.id }}" -d
-
         echo "Remove user key from SHM"
-        $CURL -s -XDELETE \
+        curl -s -XDELETE \
             -H "session-id: $SESSION_ID" \
-            $API_URL/shm/v1/storage/manage/vpn{{ us.id }}
+            $API_URL/shm/v1/storage/manage/encode_{{ us.id }}
+        curl -s -XDELETE \
+            -H "session-id: $SESSION_ID" \
+            $API_URL/shm/v1/storage/manage/url_{{ us.id }}
+        curl -s -XDELETE \
+            -H "session-id: $SESSION_ID" \
+            $API_URL/shm/v1/storage/manage/conf_{{ us.id }}
         echo "done"
         ;;
     *)
