@@ -52,8 +52,27 @@ cd /opt/amnezia-tools/src
 make
 make install
 ```
+Or
+```
+apt update && apt upgrade -y
+apt install wget -y
+wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh | sh
+```
+```
+wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
+```
+```
+cd /etc/amnezia/amneziawg/
+chmod 700 ./awg-manager.sh
+./awg-manager.sh -i -s $(curl https://ipinfo.io/ip) -I $(ip route | awk '/default/ { print $5 }')
+```
 
-## Usage
+## Usage awg-manager
+```
+./awg-manager.sh -u Username -c
+```
+
+## Usage amneziawg-go
 
 Simply run:
 ```
