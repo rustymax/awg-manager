@@ -2,7 +2,7 @@
 
 DEBIAN_FRONTEND=noninteractive apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-DEBIAN_FRONTEND=noninteractive apt-get install build-essential curl make git wget -y
+DEBIAN_FRONTEND=noninteractive apt-get install build-essential curl make git wget qrencode python-3 python3-pip -y
 
 mkdir -p /opt/go
 cd /opt/go
@@ -28,3 +28,6 @@ git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
 cd /opt/amnezia-tools/src
 make
 make install
+
+#Install PyQt6
+pip3 install PyQt6
