@@ -43,15 +43,15 @@ case $EVENT in
         ;;
     CREATE)
         echo "Create new user"
-        $AWG_MANAGER -u "{{ us.id }}" -c
+        USER_CFG=$($AWG_MANAGER -u "{{ us.id }}" -c -p)
         echo "Upload user key to SHM"
         curl -s -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
             $API_URL/shm/v1/storage/manage/conf_{{ us.id }} \
-            --data-binary "@$CONF_DIR/keys/{{ us.id }}/{{ us.id }}.conf"
+            --data-binary "$USER_CFG"
         sleep 1
-        ENCODE=$(python3 $CONF_DIR/encode.py {{ us.id }})
+        ENCODE=$(cat $CONF_DIR/keys/{{ us.id }}/{{ us.id }}.vpn)
         curl -sk -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
