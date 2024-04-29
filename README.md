@@ -25,6 +25,11 @@ Options:
 
 Run server (bare-metal or VPS) with Ubuntu 20.02, 22.02
 
+```
+sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install
+```
+Or
+
 ## Build AmneziaWG and Install additional packages
 
 ```bash
@@ -56,10 +61,6 @@ make install
 #Install PyQt6
 pip3 install PyQt6
 
-```
-Or
-```
-sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install
 ```
 
 ## Usage awg-manager
