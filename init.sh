@@ -86,7 +86,7 @@ install_package () {
 }
 
 install_go() {
-    if go version >/dev/null 2>&1; then
+    if go >/dev/null 2>&1; then
         colorized_echo green "golang install"
     else
         rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
