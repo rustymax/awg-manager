@@ -32,6 +32,9 @@ installing() {
     install_package
     install_go
     install_awg_awg_tools
+    install_awg_manager
+    install_encode_file
+    install_init_awg_manager
 }
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
@@ -121,6 +124,7 @@ install_awg_awg_tools() {
                 colorized_echo green "amneziawg-go install"
             else
                 colorized_echo red "amneziawg-go not install"
+                exit 1
             fi
         fi
         colorized_echo blue "Installing awg-tools"
@@ -132,7 +136,46 @@ install_awg_awg_tools() {
             colorized_echo green "amnezia install"
         else
             colorized_echo red "amnezia not install"
+            exit 1
         fi
+    fi
+}
+install_awg_manager() {
+    if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
+        colorized_echo blue "Downloading awg-manager"
+        wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
+        chmod 700 /etc/amnezia/amneziawg/awg-manager.sh
+        if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
+            colorized_echo red "awg-manager.sh not found"
+            exit 1
+        fi
+        colorized_echo green "awg-manager.sh downloads"
+    else
+        colorized_echo green "skip"
+    fi
+}
+install_encode_file() {
+    if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
+        colorized_echo blue "Downloading encode.py"
+        wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
+        if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
+            colorized_echo red "encode.py not found"
+            exit 1
+        fi
+        colorized_echo green "encode.py downloads"
+    else
+        colorized_echo green "skip"
+    fi
+}
+install_init_awg_manager() {
+    if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
+        colorized_echo red "awg-manager.sh not found"
+        exit 1
+    else
+        cd /etc/amnezia/amneziawg/
+        chmod 700 ./awg-manager.sh
+        ./awg-manager.sh -i -s $(curl https://ipinfo.io/ip) -I $(ip route | awk '/default/ { print $5 }')
+        ./awg-manager.sh -u system -c
     fi
 }
 case "$1" in
