@@ -98,13 +98,6 @@ install_go() {
         exit 1
     fi
 }
-install_awg() {
-
-}
-install_awg_tools() {
-
-}
-
 
 case "$1" in
     install)
