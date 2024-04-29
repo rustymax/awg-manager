@@ -31,8 +31,6 @@ installing() {
     detect_and_update_package_manager
     install_package
     install_go
-    install_awg
-    install_awg_tools
 }
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
