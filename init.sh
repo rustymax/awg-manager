@@ -31,8 +31,7 @@ installing() {
     detect_and_update_package_manager
     install_package
     install_go
-    install_awg
-    install_awg_tools
+    install_awg_awg_tools
 }
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
@@ -89,6 +88,8 @@ install_go() {
     if [ -x "$(command -v go)" ]; then
         colorized_echo green "golang install"
     else
+        colorized_echo blue "Installing golang"
+
         rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
         wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
         rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
@@ -106,6 +107,8 @@ install_awg_awg_tools() {
     if [ -x "$(command -v awg)" ]; then
         colorized_echo green "amnezia install"
     else
+        colorized_echo blue "Installing AWG"
+        
         rm -rf /opt/amnezia-go && mkdir -p /opt/amnezia-go && cd /opt/amnezia-go
         git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
         make
