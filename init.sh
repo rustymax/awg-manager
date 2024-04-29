@@ -34,7 +34,6 @@ installing() {
     install_awg_awg_tools
     install_awg_manager
     install_encode_file
-    install_init_awg_manager
 }
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
@@ -166,18 +165,6 @@ install_encode_file() {
         colorized_echo green "encode.py downloads"
     else
         colorized_echo green "skip"
-    fi
-}
-install_init_awg_manager() {
-    if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
-        colorized_echo red "awg-manager.sh not found"
-        exit 1
-    else
-        cd /etc/amnezia/amneziawg/
-        chmod 700 ./awg-manager.sh
-        ./awg-manager.sh -i -s $(curl https://ipinfo.io/ip) -I $(ip route | awk '/default/ { print $5 }')
-        ./awg-manager.sh -u system -c
-        ./awg-manager.sh -u system -d
     fi
 }
 case "$1" in
