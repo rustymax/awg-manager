@@ -158,6 +158,7 @@ install_encode_file() {
     if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
         colorized_echo blue "Downloading encode.py"
         wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
+        pip3 install PyQt6
         if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
             colorized_echo red "encode.py not found"
             exit 1
@@ -176,6 +177,7 @@ install_init_awg_manager() {
         chmod 700 ./awg-manager.sh
         ./awg-manager.sh -i -s $(curl https://ipinfo.io/ip) -I $(ip route | awk '/default/ { print $5 }')
         ./awg-manager.sh -u system -c
+        ./awg-manager.sh -u system -d
     fi
 }
 case "$1" in
