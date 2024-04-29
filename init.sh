@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
@@ -83,12 +83,12 @@ install_package () {
     fi
 }
 
-
 install_go() {
     rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
     wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
     rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
-    cp /usr/local/go/bin/go /usr/bin && cp /usr/local/go/bin/gofmt /usr/bin
+    echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+    source /etc/profile && source ~/.profile
     if go version >/dev/null 2>&1; then
         echo "Golang installed"
     else
@@ -96,6 +96,13 @@ install_go() {
         exit 1
     fi
 }
+install_awg() {
+
+}
+install_awg_tools() {
+
+}
+
 
 case "$1" in
     install)
@@ -103,3 +110,4 @@ case "$1" in
     *)
     usage;;
 esac
+
