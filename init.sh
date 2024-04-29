@@ -31,6 +31,8 @@ installing() {
     detect_and_update_package_manager
     install_package
     install_go
+    install_awg
+    install_awg_tools
 }
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
@@ -84,20 +86,54 @@ install_package () {
 }
 
 install_go() {
-    rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
-    wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
-    echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
-    source /etc/profile && source ~/.profile
     if go version >/dev/null 2>&1; then
         colorized_echo green "golang install"
     else
-        colorized_echo red "golang not found"
-        exit 1
+        rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
+        wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
+        rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
+        echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+        source /etc/profile && source ~/.profile
+        if go version >/dev/null 2>&1; then
+            colorized_echo green "golang install"
+        else
+            colorized_echo red "golang not found"
+            exit 1
+        fi
     fi
 }
-
-
+install_awg() {
+    if awg >/dev/null 2>&1; then
+        colorized_echo green "amnezia-go install"
+    else
+        rm -rf /opt/amnezia-go && mkdir -p /opt/amnezia-go && cd /opt/amnezia-go
+        git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
+        make
+        cp /opt/amnezia-go/amneziawg-go /usr/bin/amneziawg-go
+        if awg >/dev/null 2>&1; then
+            colorized_echo green "amnezia-go install"
+        else
+            colorized_echo red "amnezia-go not found"
+            exit 1
+        fi
+    fi
+}
+install_awg_tools() {
+    if awg >/dev/null 2>&1; then
+        colorized_echo green "amnezia-go install"
+    else
+        rm -rf /opt/amnezia-tools && mkdir -p /opt/amnezia-tools
+        git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
+        cd /opt/amnezia-tools/src
+        make && make install
+        if awg-quick >/dev/null 2>&1; then
+            colorized_echo green "amnezia-tools install"
+        else
+            colorized_echo red "amnezia-tools not found"
+            exit 1
+        fi
+    fi
+}
 case "$1" in
     install)
     shift; installing "$@";;
