@@ -61,15 +61,6 @@ Or
 ```
 sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install
 ```
-```
-wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
-wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
-```
-```
-cd /etc/amnezia/amneziawg/
-chmod 700 ./awg-manager.sh
-./awg-manager.sh -i -s $(curl https://ipinfo.io/ip) -I $(ip route | awk '/default/ { print $5 }')
-```
 
 ## Usage awg-manager
 ```
