@@ -59,9 +59,7 @@ pip3 install PyQt6
 ```
 Or
 ```
-apt update && apt upgrade -y
-apt install wget -y
-wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh | sh
+sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install
 ```
 ```
 wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
