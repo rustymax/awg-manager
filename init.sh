@@ -85,12 +85,10 @@ install_package () {
 
 
 install_go() {
-    mkdir -p /opt/go
-    cd /opt/go
-    curl -O https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
-    rm -rf /usr/local/go && tar -C /usr/local -xvzf go1.22.0.linux-amd64.tar.gz
-    cp /usr/local/go/bin/go /usr/bin
-    cp /usr/local/go/bin/gofmt /usr/bin
+    rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
+    wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
+    cp /usr/local/go/bin/go /usr/bin && cp /usr/local/go/bin/gofmt /usr/bin
     if go version >/dev/null 2>&1; then
         echo "Golang installed"
     else
