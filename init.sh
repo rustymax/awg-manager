@@ -85,12 +85,12 @@ install_package () {
 
 install_go() {
     rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
-    wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+    wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
     echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
     source /etc/profile && source ~/.profile
     if go version >/dev/null 2>&1; then
-        echo "Golang installed"
+        colorized_echo green "golang install"
     else
         colorized_echo red "golang not found"
         exit 1
