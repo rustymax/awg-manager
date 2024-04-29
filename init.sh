@@ -102,34 +102,23 @@ install_go() {
         fi
     fi
 }
-install_awg() {
+install_awg_awg_tools() {
     if awg >/dev/null 2>&1; then
-        colorized_echo green "amnezia-go install"
+        colorized_echo green "amnezia install"
     else
         rm -rf /opt/amnezia-go && mkdir -p /opt/amnezia-go && cd /opt/amnezia-go
         git clone https://github.com/amnezia-vpn/amneziawg-go.git /opt/amnezia-go
         make
         cp /opt/amnezia-go/amneziawg-go /usr/bin/amneziawg-go
-        if awg >/dev/null 2>&1; then
-            colorized_echo green "amnezia-go install"
-        else
-            colorized_echo red "amnezia-go not found"
-            exit 1
-        fi
-    fi
-}
-install_awg_tools() {
-    if awg >/dev/null 2>&1; then
-        colorized_echo green "amnezia-go install"
-    else
+        sleep 1
         rm -rf /opt/amnezia-tools && mkdir -p /opt/amnezia-tools
         git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
         cd /opt/amnezia-tools/src
         make && make install
-        if awg-quick >/dev/null 2>&1; then
-            colorized_echo green "amnezia-tools install"
+        if awg >/dev/null 2>&1; then
+            colorized_echo green "amnezia install"
         else
-            colorized_echo red "amnezia-tools not found"
+            colorized_echo red "amnezia not found"
             exit 1
         fi
     fi
