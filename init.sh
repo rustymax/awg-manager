@@ -86,7 +86,7 @@ install_package () {
 }
 
 install_go() {
-    if go >/dev/null 2>&1; then
+    if [ -x "$(command -v go)" ]; then
         colorized_echo green "golang install"
     else
         rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
@@ -94,7 +94,7 @@ install_go() {
         rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
         echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
         source /etc/profile && source ~/.profile
-        if go version >/dev/null 2>&1; then
+        if [ -x "$(command -v go)" ]; then
             colorized_echo green "golang install"
         else
             colorized_echo red "golang not found"
@@ -103,7 +103,7 @@ install_go() {
     fi
 }
 install_awg_awg_tools() {
-    if awg >/dev/null 2>&1; then
+    if [ -x "$(command -v awg)" ]; then
         colorized_echo green "amnezia install"
     else
         rm -rf /opt/amnezia-go && mkdir -p /opt/amnezia-go && cd /opt/amnezia-go
@@ -115,11 +115,10 @@ install_awg_awg_tools() {
         git clone https://github.com/amnezia-vpn/amneziawg-tools.git /opt/amnezia-tools
         cd /opt/amnezia-tools/src
         make && make install
-        if awg >/dev/null 2>&1; then
+        if [ -x "$(command -v awg)" ]; then
             colorized_echo green "amnezia install"
         else
-            colorized_echo red "amnezia not found"
-            exit 1
+            colorized_echo red "amnezia not install"
         fi
     fi
 }
