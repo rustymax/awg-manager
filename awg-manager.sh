@@ -199,6 +199,7 @@ cat <<EOF > "keys/${USER}/${USER}.conf"
 [Interface]
 PrivateKey = ${USER_PVT_KEY}
 Address = ${USER_IP}
+DNS = 1.1.1.1, 8.8.8.8
 Jc = 7
 Jmin = 50
 Jmax = 1000
