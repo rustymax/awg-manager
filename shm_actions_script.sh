@@ -34,8 +34,6 @@ case $EVENT in
         echo
         echo "Download awg-manager.sh & encode.py"
         mkdir -p $CONF_DIR
-        curl -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > $AWG_MANAGER
-        curl -s https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > $CONF_DIR/encode.py
 
         echo "Init server"
         chmod 700 $AWG_MANAGER
