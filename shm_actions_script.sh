@@ -12,6 +12,10 @@ echo "EVENT=$EVENT"
 
 case $EVENT in
     INIT)
+        echo
+        echo "Init"
+        sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install
+        echo
         SERVER_HOST="{{ server.settings.host_name }}"
         SERVER_INTERFACE="{{ server.settings.interface }}"
         if [[ -z "$SERVER_INTERFACE" ]]; then
