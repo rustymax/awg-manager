@@ -50,15 +50,10 @@ case $EVENT in
         curl -s -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
-            $API_URL/shm/v1/storage/manage/conf_{{ us.id }} \
+            $API_URL/shm/v1/storage/manage/vpn{{ us.id }} \
             --data-binary "$USER_CFG"
         sleep 1
         ENCODE=$(cat $CONF_DIR/keys/{{ us.id }}/{{ us.id }}.vpn)
-        curl -sk -XPUT \
-            -H "session-id: $SESSION_ID" \
-            -H "Content-Type: text/plain" \
-            $API_URL/shm/v1/storage/manage/url_{{ us.id }} \
-            --data-binary "vpn://$ENCODE"
         curl -sk -XPUT \
             -H "session-id: $SESSION_ID" \
             -H "Content-Type: text/plain" \
@@ -82,13 +77,10 @@ case $EVENT in
         echo "Remove user key from SHM"
         curl -s -XDELETE \
             -H "session-id: $SESSION_ID" \
+            $API_URL/shm/v1/storage/manage/vpn{{ us.id }}
+        curl -s -XDELETE \
+            -H "session-id: $SESSION_ID" \
             $API_URL/shm/v1/storage/manage/encode_{{ us.id }}
-        curl -s -XDELETE \
-            -H "session-id: $SESSION_ID" \
-            $API_URL/shm/v1/storage/manage/url_{{ us.id }}
-        curl -s -XDELETE \
-            -H "session-id: $SESSION_ID" \
-            $API_URL/shm/v1/storage/manage/conf_{{ us.id }}
         echo "done"
         ;;
     *)
