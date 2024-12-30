@@ -32,7 +32,6 @@ case $EVENT in
             exit 1
         fi
         echo
-        echo "Download awg-manager.sh & encode.py"
         mkdir -p $CONF_DIR
 
         echo "Init server"
