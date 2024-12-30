@@ -1,6 +1,5 @@
 from os import system, name
 from typing import TypedDict
-# from core import pack
 import json
 import sys
 from PyQt6.QtCore import *
