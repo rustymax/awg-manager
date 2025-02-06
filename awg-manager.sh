@@ -200,15 +200,15 @@ cat <<EOF > "keys/${USER}/${USER}.conf"
 PrivateKey = ${USER_PVT_KEY}
 Address = ${USER_IP}
 DNS = 1.1.1.1, 8.8.8.8
-Jc = 7
+Jc = 5
 Jmin = 50
 Jmax = 1000
-S1 = 0
-S2 = 0
-H1 = 1139437039
-H2 = 1088834137
-H3 = 977318325
-H4 = 1583407056
+S1 = 147
+S2 = 57
+H1 = 1121994835
+H2 = 1702292146
+H3 = 1975368295
+H4 = 1948088518
 
 [Peer]
 PublicKey = ${SERVER_PUB_KEY}
