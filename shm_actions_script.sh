@@ -17,10 +17,6 @@ case $EVENT in
         sudo bash -c "$(curl -sL https://raw.githubusercontent.com/bkeenke/awg-manager/master/init.sh)" @ install >> /dev/null
         echo
         SERVER_HOST="{{ server.settings.host_name }}"
-        SERVER_INTERFACE="{{ server.settings.interface }}"
-        if [[ -z "$SERVER_INTERFACE" ]]; then
-            SERVER_INTERFACE=$(ip route | awk '/default/ {print $5; exit}')
-        fi
         if [ -z $SERVER_HOST ]; then
             SERVER_HOST="{{ server.settings.host }}"
         fi
@@ -36,11 +32,7 @@ case $EVENT in
 
         echo "Init server"
         chmod 700 $AWG_MANAGER
-        if [ $SERVER_INTERFACE ]; then
-            $AWG_MANAGER -i -s $SERVER_HOST -I $SERVER_INTERFACE
-        else
-            $AWG_MANAGER -i -s $SERVER_HOST
-        fi
+        $AWG_MANAGER -i -s $SERVER_HOST
         ;;
     CREATE)
         echo "Create new user"
