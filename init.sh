@@ -93,8 +93,8 @@ install_go() {
         colorized_echo blue "Installing golang"
 
         rm -rf /opt/go && mkdir -p /opt/go && cd /opt/go
-        wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
-        rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
+        wget https://go.dev/dl/go1.24.linux-amd64.tar.gz
+        rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.linux-amd64.tar.gz
         echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
         source /etc/profile && source ~/.profile
         if [ -x "$(command -v go)" ]; then
@@ -142,7 +142,7 @@ install_awg_awg_tools() {
 install_awg_manager() {
     if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
         colorized_echo blue "Downloading awg-manager"
-        wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
+        wget -O- https://raw.githubusercontent.com/rustymax/awg-manager/master/awg-manager.sh > /etc/amnezia/amneziawg/awg-manager.sh
         chmod 700 /etc/amnezia/amneziawg/awg-manager.sh
         if [ ! -f /etc/amnezia/amneziawg/awg-manager.sh ]; then
             colorized_echo red "awg-manager.sh not found"
@@ -156,7 +156,7 @@ install_awg_manager() {
 install_encode_file() {
     if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
         colorized_echo blue "Downloading encode.py"
-        wget -O- https://raw.githubusercontent.com/bkeenke/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
+        wget -O- https://raw.githubusercontent.com/rustymax/awg-manager/master/encode.py > /etc/amnezia/amneziawg/encode.py
         pip3 install PyQt6
         if [ ! -f /etc/amnezia/amneziawg/encode.py ]; then
             colorized_echo red "encode.py not found"
